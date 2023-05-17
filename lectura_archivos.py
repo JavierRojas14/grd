@@ -181,12 +181,14 @@ def leer_grd():
         peso_en_float = pl.col("IR_29301_PESO").str.replace(",", ".").cast(pl.Float32, strict=True)
         estancia = pl.col("FECHAALTA") - pl.col("FECHA_INGRESO")
         anio = pl.col("FECHAALTA").dt.year()
+        mes = pl.col("FECHAALTA").dt.month()
 
         df = df.with_columns(
             [
                 peso_en_float.alias("IR_29301_PESO"),
                 estancia.alias("ESTANCIA"),
                 anio.alias("ANIO_EGRESO"),
+                mes.alias("MES_EGRESO"),
             ]
         )
         df = df.collect()
