@@ -1,7 +1,18 @@
-import pandas as pd
-import polars as pl
+"""
+GRD Data Processing Module
 
-import numpy as np
+This module provides functions to read and process the GRD (Grupos Relacionados por el Diagnóstico)
+data from FONASA's hospital discharges in Chile. The module uses the `polars` library for efficient
+data processing and manipulation.
+
+The main function `leer_grd` reads the GRD database, applies necessary data transformations, and
+returns the processed DataFrame.
+
+The module also defines constants for column properties, including data types and null values,
+to ensure consistent data handling throughout the script.
+"""
+
+import polars as pl
 
 
 COLUMNAS_POLARS = {
@@ -150,6 +161,15 @@ VALORES_NULOS_COLUMNAS = {
 
 
 def leer_grd():
+    """
+    Reads and processes the GRD data.
+
+    This function reads the GRD database from FONASA's hospital discharges of Chile,
+    applies data transformations and returns the processed DataFrame.
+
+    :return: The processed DataFrame containing the GRD data.
+    :rtype: polars.DataFrame
+    """
     with pl.StringCache():
         df = pl.scan_csv(
             "input/*.txt",
