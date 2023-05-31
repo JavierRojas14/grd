@@ -215,11 +215,11 @@ def leer_diccionario_procedimientos_a_y_b():
     )
 
     dict_a_y_b.loc[
-        codigos_formateados_largo_4.index, "codigo_formateado"
+        codigos_formateados_largo_4.index, "codigo_procedimiento"
     ] = codigos_formateados_largo_4
 
     dict_a_y_b.loc[
-        codigos_formateado_largo_3.index, "codigo_formateado"
+        codigos_formateado_largo_3.index, "codigo_procedimiento"
     ] = codigos_formateado_largo_3
 
     return dict_a_y_b
