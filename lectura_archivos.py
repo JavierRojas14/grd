@@ -13,6 +13,7 @@ to ensure consistent data handling throughout the script.
 """
 
 import polars as pl
+import pandas as pd
 
 
 COLUMNAS_POLARS = {
@@ -190,9 +191,35 @@ def leer_grd():
                 estancia.alias("ESTANCIA"),
                 anio.alias("ANIO_EGRESO"),
                 mes.alias("MES_EGRESO"),
-                fecha.alias("FECHA")
+                fecha.alias("FECHA"),
             ]
         )
         df = df.collect()
 
         return df
+
+
+def leer_diccionario_procedimientos_a_y_b():
+    dict_a_y_b = pd.read_excel(
+        "input/diccionario_procedimientos_grd_depurados.xlsx", dtype={"Código": str}
+    )
+
+    codigos_largo_4 = dict_a_y_b[dict_a_y_b["Código"].str.len() == 4]
+    codigos_largo_3 = dict_a_y_b[dict_a_y_b["Código"].str.len() == 3]
+
+    codigos_formateados_largo_4 = (
+        codigos_largo_4["Código"].str[:2] + "." + codigos_largo_4["Código"].str[-2:]
+    )
+    codigos_formateado_largo_3 = (
+        codigos_largo_3["Código"].str[:2] + "." + codigos_largo_3["Código"].str[-1:]
+    )
+
+    dict_a_y_b.loc[
+        codigos_formateados_largo_4.index, "codigo_formateado"
+    ] = codigos_formateados_largo_4
+
+    dict_a_y_b.loc[
+        codigos_formateado_largo_3.index, "codigo_formateado"
+    ] = codigos_formateado_largo_3
+
+    return dict_a_y_b
