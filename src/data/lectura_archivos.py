@@ -161,7 +161,7 @@ VALORES_NULOS_COLUMNAS = {
 }
 
 
-def leer_grd():
+def leer_grd(input_folder):
     """
     Reads and processes the GRD data.
 
@@ -173,14 +173,14 @@ def leer_grd():
     """
     with pl.StringCache():
         df = pl.scan_csv(
-            "input/*.txt",
+            f"{input_folder}/*.txt",
             separator="|",
             dtypes=COLUMNAS_POLARS,
             null_values=VALORES_NULOS_COLUMNAS,
         )
 
         peso_en_float = pl.col("IR_29301_PESO").str.replace(",", ".").cast(pl.Float32, strict=True)
-        estancia = pl.col("FECHAALTA") - pl.col("FECHA_INGRESO")
+        estancia = (pl.col("FECHAALTA") - pl.col("FECHA_INGRESO")).dt.days()
         anio = pl.col("FECHAALTA").dt.year()
         mes = pl.col("FECHAALTA").dt.month()
         fecha = pl.concat_str(anio.cast(str) + "-" + mes.cast(str))
