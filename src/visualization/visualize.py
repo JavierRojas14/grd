@@ -21,7 +21,7 @@ Functions:
 - analizar_correlacion_todas_las_variables: Analyzes the correlation between all variables in a
   DataFrame.
 """
-import matplotlib.pyplot as plst
+import matplotlib.pyplot as plt
 import missingno as msno
 import pandas as pd
 import seaborn as sns
