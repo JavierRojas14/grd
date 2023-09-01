@@ -179,6 +179,7 @@ platformdirs @ file:///Users/cbousseau/work/recipes/ci_py311/platformdirs_167790
 plotly @ file:///Users/cbousseau/work/recipes/ci_py311/plotly_1677953301864/work
 pluggy @ file:///Users/cbousseau/work/recipes/ci_py311/pluggy_1677906980825/work
 ply==3.11
+polars==0.18.15
 pooch @ file:///tmp/build/80754af9/pooch_1623324770023/work
 poyo @ file:///tmp/build/80754af9/poyo_1617751526755/work
 prometheus-client @ file:///Users/cbousseau/work/recipes/ci_py311_2/prometheus_client_1678996808082/work
@@ -215,6 +216,7 @@ pyrsistent @ file:///Users/cbousseau/work/recipes/ci_py311/pyrsistent_1677909782
 PySocks @ file:///Users/cbousseau/work/recipes/ci_py311/pysocks_1677906386870/work
 pytest @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_75ehl8i878/croot/pytest_1690474711033/work
 python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
+python-dotenv==1.0.0
 python-json-logger @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_c3baq2ko4j/croot/python-json-logger_1683823815343/work
 python-lsp-black @ file:///Users/cbousseau/work/recipes/ci_py311/python-lsp-black_1677961743861/work
 python-lsp-jsonrpc==1.0.0
