@@ -179,7 +179,9 @@ def leer_grd(input_folder):
             null_values=VALORES_NULOS_COLUMNAS,
         )
 
-        peso_en_float = pl.col("IR_29301_PESO").str.replace(",", ".").cast(pl.Float32, strict=True)
+        peso_en_float = (
+            pl.col("IR_29301_PESO").str.replace(",", ".").cast(pl.Float32, strict=True)
+        )
         estancia = (pl.col("FECHAALTA") - pl.col("FECHA_INGRESO")).dt.days()
         anio = pl.col("FECHAALTA").dt.year()
         mes = pl.col("FECHAALTA").dt.month()
