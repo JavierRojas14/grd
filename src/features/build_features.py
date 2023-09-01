@@ -13,7 +13,9 @@ def contar_procedimientos_y_rankear(df_procedimientos_long):
         conteo_procedimientos.groupby(["ANIO_EGRESO", "procedimiento"]).cumcount() + 1
     )
 
-    diferencia_entre_hospitales_contiguos = conteo_procedimientos["conteo"].diff(periods=-1)
+    diferencia_entre_hospitales_contiguos = (
+        conteo_procedimientos["conteo"].diff(periods=-1).astype("Int32")
+    )
 
     total_procedimientos = conteo_procedimientos.groupby(["ANIO_EGRESO", "procedimiento"])[
         "conteo"
