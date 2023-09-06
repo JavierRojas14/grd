@@ -38,6 +38,6 @@ def calcular_conteo_y_ranking_sobre_variable_categorica(
     conteo = agregar_ranking_sobre_un_grupo(conteo, grupo_ranking, var_conteo)
     conteo[var_diferencias] = obtener_diferencias_entre_filas_de_serie(conteo[var_conteo])
     conteo[var_totales] = obtener_totales_sobre_un_grupo(conteo, grupo_ranking, var_conteo)
-    conteo[var_proporcion] = round((conteo[var_conteo] / conteo[var_totales]), 2)
+    conteo[var_proporcion] = conteo[var_conteo] / conteo[var_totales]
 
     return conteo
