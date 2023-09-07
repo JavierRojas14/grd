@@ -205,7 +205,7 @@ def leer_grd(input_folder):
             .round(0)
             .cut(range(0, 121, 10))
         )
-        prevision = pl.col("PREVISION").map_dict(REEMPLAZO_PREVISION)
+        prevision = pl.col("PREVISION").map_dict(REEMPLAZO_PREVISION, default=pl.first())
 
         df = df.with_columns(
             [
