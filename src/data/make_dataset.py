@@ -159,9 +159,9 @@ def agregar_informacion_comuna(df):
     tmp = df.clone()
 
     comunas = (
-        pd.read_excel("data/external/Esquema_Registro-2023.xls", sheet_name=2, header=6)
-        .dropna(how="all", axis=1)
-        .iloc[:, :-1]
+        pd.read_excel("data/external/Esquema_Registro-2023.xls", sheet_name=2, header=6).dropna(
+            how="all", axis=1
+        )
     ).dropna()
 
     comunas = pl.from_dataframe(comunas)
