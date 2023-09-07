@@ -154,6 +154,13 @@ VALORES_NULOS_COLUMNAS = {
     "IR_29301_MORTALIDAD": "DESCONOCIDO",
 }
 
+REEMPLAZO_PREVISION = {
+    "FONASA INSTITUCIONAL - (MAI) A": "FONASA A",
+    "FONASA INSTITUCIONAL - (MAI) B": "FONASA B",
+    "FONASA INSTITUCIONAL - (MAI) C": "FONASA C",
+    "FONASA INSTITUCIONAL - (MAI) D": "FONASA D",
+}
+
 
 def agregar_informacion_comuna(df):
     tmp = df.clone()
@@ -198,6 +205,7 @@ def leer_grd(input_folder):
             .round(0)
             .cut(range(0, 121, 10))
         )
+        prevision = pl.col("PREVISION").map_dict(REEMPLAZO_PREVISION)
 
         df = df.with_columns(
             [
@@ -207,6 +215,7 @@ def leer_grd(input_folder):
                 mes.alias("MES_EGRESO"),
                 fecha.alias("FECHA"),
                 edad_persona.alias("RANGO_ETARIO"),
+                prevision.alias("PREVISION"),
             ]
         )
         df = df.collect()
