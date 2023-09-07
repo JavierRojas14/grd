@@ -178,8 +178,10 @@ def leer_grd(input_folder):
         anio = pl.col("FECHAALTA").dt.year()
         mes = pl.col("FECHAALTA").dt.month()
         fecha = pl.concat_str(anio.cast(str) + "-" + mes.cast(str))
-        edad_persona = (((pl.col("FECHAALTA") - pl.col("FECHA_NACIMIENTO")).dt.days()) / 365).round(
-            0
+        edad_persona = (
+            (((pl.col("FECHAALTA") - pl.col("FECHA_NACIMIENTO")).dt.days()) / 365)
+            .round(0)
+            .cut(range(0, 121, 10))
         )
 
         df = df.with_columns(
@@ -189,7 +191,7 @@ def leer_grd(input_folder):
                 anio.alias("ANIO_EGRESO"),
                 mes.alias("MES_EGRESO"),
                 fecha.alias("FECHA"),
-                edad_persona.alias("EDAD_PERSONA"),
+                edad_persona.alias("RANGO_ETARIO"),
             ]
         )
         df = df.collect()
