@@ -16,7 +16,7 @@ COLUMNAS_POLARS = {
     "FECHA_NACIMIENTO": pl.Date,
     "ETNIA": pl.Categorical,
     "PROVINCIA": pl.Categorical,
-    "COMUNA": pl.Categorical,
+    "COMUNA": str,
     "NACIONALIDAD": pl.Categorical,
     "PREVISION": pl.Categorical,
     "SERVICIO_SALUD": pl.Categorical,
@@ -155,6 +155,21 @@ VALORES_NULOS_COLUMNAS = {
 }
 
 
+def agregar_informacion_comuna(df):
+    tmp = df.clone()
+
+    comunas = (
+        pd.read_excel("data/external/Esquema_Registro-2023.xls", sheet_name=2, header=6)
+        .dropna(how="all", axis=1)
+        .iloc[:, :-1]
+    ).dropna()
+
+    comunas = pl.from_dataframe(comunas)
+
+    tmp = tmp.join(comunas, how="inner", left_on="COMUNA", right_on="Nombre Comuna")
+    return tmp
+
+
 def leer_grd(input_folder):
     """
     Reads and processes the GRD data.
@@ -195,6 +210,7 @@ def leer_grd(input_folder):
             ]
         )
         df = df.collect()
+        df = agregar_informacion_comuna(df)
 
         return df
 
