@@ -70,9 +70,9 @@ class TestDataFrameTransformationAndContarConAgrupacion(unittest.TestCase):
     def test_contar_con_agrupacion(self):
         # Create a sample DataFrame for testing
         data = {
-            "COD_HOSPITAL": [1, 2, 2, 3, 3],
-            "TIPO_ACTIVIDAD": ["A", "B", "A", "C", "B"],
-            "procedimiento": ["P1A", "P1B", "P1A", "P2A", "P1B"],
+            "COD_HOSPITAL": [1, 2, 2, 3, 1],
+            "TIPO_ACTIVIDAD": ["A", "B", "A", "C", "A"],
+            "procedimiento": ["P1A", "P1B", "P1A", "P2A", "P1A"],
         }
         df = pd.DataFrame(data)
 
@@ -83,10 +83,10 @@ class TestDataFrameTransformationAndContarConAgrupacion(unittest.TestCase):
 
         # Define the expected result DataFrame
         expected_data = {
-            "COD_HOSPITAL": [1, 2, 2, 3, 3],
-            "TIPO_ACTIVIDAD": ["A", "B", "A", "C", "B"],
-            "procedimiento": ["P1A", "P1B", "P1A", "P2A", "P1B"],
-            "conteo": [1, 2, 1, 1, 1],
+            "COD_HOSPITAL": [1, 2, 2, 3],
+            "TIPO_ACTIVIDAD": ["A", "A", "B", "C"],
+            "procedimiento": ["P1A", "P1A", "P1B", "P2A"],
+            "conteo": [2, 1, 1, 1],
         }
         expected_df = pd.DataFrame(expected_data)
 
