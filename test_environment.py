@@ -24,7 +24,6 @@ class TestDataFrameTransformationAndContarConAgrupacion(unittest.TestCase):
             "PROCEDIMIENTO2": ["P2A", "P2B", "P2C"],
         }
         df_procesada = pd.DataFrame(data)
-        print(df_procesada)
 
         # Perform the transformation
         procedimientos_3_long = pd.melt(
@@ -64,7 +63,6 @@ class TestDataFrameTransformationAndContarConAgrupacion(unittest.TestCase):
             "procedimiento": ["P1A", "P1B", "P1C", "P2A", "P2B", "P2C"],
         }
         expected_df = pd.DataFrame(expected_data)
-        print(expected_df)
 
         # Check if the transformed DataFrame matches the expected DataFrame
         pd.testing.assert_frame_equal(procedimientos_3_long, expected_df)
