@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 
 def contar_con_agrupacion(df, agrupacion, var_categorica_a_contar, nombre_var_conteo):
@@ -120,3 +121,33 @@ def obtener_desglose_sociodemografico(
         dict_resultados[variable] = conteo_dinamico
 
     return dict_resultados
+
+
+def obtener_cartera_de_procedimientos_por_diagnostico(proced_con_diagnosticos):
+    conteo_procedimientos_por_diagnostico = (
+        proced_con_diagnosticos.groupby("DIAGNOSTICO1")["procedimiento"]
+        .value_counts()
+        .reset_index(name="cantidad_procedimientos")
+    )
+
+    cantidad_pacientes_por_diags = (
+        proced_con_diagnosticos.groupby("DIAGNOSTICO1")["CIP_ENCRIPTADO"]
+        .nunique()
+        .reset_index(name="cantidad_pacientes_distintos")
+    )
+
+    proceds_por_diagnosticos_y_pacientes = pd.merge(
+        conteo_procedimientos_por_diagnostico,
+        cantidad_pacientes_por_diags,
+        how="inner",
+        on="DIAGNOSTICO1",
+    )
+
+    proporcion_de_proceds = (
+        proceds_por_diagnosticos_y_pacientes["cantidad_procedimientos"]
+        / proceds_por_diagnosticos_y_pacientes["cantidad_pacientes_distintos"]
+    )
+
+    proceds_por_diagnosticos_y_pacientes["cantidad_proced_por_pacientes"] = proporcion_de_proceds
+
+    return proceds_por_diagnosticos_y_pacientes
