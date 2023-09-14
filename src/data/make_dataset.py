@@ -171,6 +171,8 @@ def agregar_informacion_comuna(df):
         )
     ).dropna()
 
+    comunas = comunas.rename({"Código Comuna": "cod_comuna", "Código Región": "codregion"})
+
     comunas = pl.from_dataframe(comunas)
 
     tmp = tmp.join(comunas, how="inner", left_on="COMUNA", right_on="Nombre Comuna")
