@@ -166,12 +166,17 @@ def agregar_informacion_comuna(df):
     tmp = df.clone()
 
     comunas = (
-        pd.read_excel("data/external/Esquema_Registro-2023.xls", sheet_name=2, header=6).dropna(
-            how="all", axis=1
+        (
+            pd.read_excel("data/external/Esquema_Registro-2023.xls", sheet_name=2, header=6).dropna(
+                how="all", axis=1
+            )
         )
-    ).dropna()
+        .dropna()
+        .drop(columns="Unnamed: 9")
+    )
 
     comunas = comunas.rename(columns={"Código Comuna": "cod_comuna", "Código Región": "codregion"})
+    print(comunas.info())
 
     comunas = pl.from_dataframe(comunas)
 
