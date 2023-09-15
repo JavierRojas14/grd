@@ -165,20 +165,15 @@ REEMPLAZO_PREVISION = {
 def agregar_informacion_comuna(df):
     tmp = df.clone()
 
-    comunas = (
-        (
-            pd.read_excel("data/external/Esquema_Registro-2023.xls", sheet_name=2, header=6).dropna(
-                how="all", axis=1
-            )
-        )
-        .dropna()
-        .drop(columns="Unnamed: 9")
-    )
+    comunas = pd.read_excel("data/external/Esquema_Registro-2023.xls", sheet_name=2, header=6)
+    comunas = comunas[["Código Comuna", "Nombre Comuna", "Código Región", "Nombre Región"]]
+    comunas = comunas.dropna(how="all")
+    comunas["Código Comuna"] = comunas["Código Comuna"].astype(int)
+    comunas["Código Región"] = comunas["Código Región"].astype(int)
 
     comunas = comunas.rename(columns={"Código Comuna": "cod_comuna", "Código Región": "codregion"})
-    print(comunas.info())
 
-    comunas = pl.from_dataframe(comunas)
+    comunas = pl.from_pandas(comunas)
 
     tmp = tmp.join(comunas, how="inner", left_on="COMUNA", right_on="Nombre Comuna")
     return tmp
