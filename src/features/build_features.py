@@ -125,13 +125,13 @@ def obtener_desglose_sociodemografico(
 
 def obtener_cartera_de_procedimientos_por_diagnostico(proced_con_diagnosticos):
     conteo_procedimientos_por_diagnostico = (
-        proced_con_diagnosticos.groupby("DIAGNOSTICO1")["procedimiento"]
+        proced_con_diagnosticos.groupby(["ANIO_EGRESO", "DIAGNOSTICO1"])["procedimiento"]
         .value_counts()
         .reset_index(name="cantidad_procedimientos")
     )
 
     cantidad_pacientes_por_diags = (
-        proced_con_diagnosticos.groupby("DIAGNOSTICO1")["CIP_ENCRIPTADO"]
+        proced_con_diagnosticos.groupby(["ANIO_EGRESO", "DIAGNOSTICO1"])["CIP_ENCRIPTADO"]
         .nunique()
         .reset_index(name="cantidad_pacientes_distintos")
     )
@@ -140,7 +140,7 @@ def obtener_cartera_de_procedimientos_por_diagnostico(proced_con_diagnosticos):
         conteo_procedimientos_por_diagnostico,
         cantidad_pacientes_por_diags,
         how="inner",
-        on="DIAGNOSTICO1",
+        on=["ANIO_EGRESO", "DIAGNOSTICO1"],
     )
 
     proporcion_de_proceds = (
