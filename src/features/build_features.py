@@ -151,3 +151,26 @@ def obtener_cartera_de_procedimientos_por_diagnostico(proced_con_diagnosticos):
     proceds_por_diagnosticos_y_pacientes["cantidad_proced_por_pacientes"] = proporcion_de_proceds
 
     return proceds_por_diagnosticos_y_pacientes
+
+
+def calculate_and_add_difference(df, column_pairs):
+    """
+    Calculate the absolute difference between two columns in a Pandas DataFrame
+    and add the difference as a new column to the original DataFrame.
+
+    Parameters:
+    df : Pandas DataFrame
+        The original DataFrame.
+    column_pairs : list of tuples
+        A list of tuples where each tuple contains two column names.
+        The absolute difference will be calculated between these columns.
+
+    Returns:
+    Pandas DataFrame
+        The DataFrame with the absolute differences added as new columns.
+    """
+    for pair in column_pairs:
+        col1, col2 = pair
+        diff_col_name = f"{col1}_{col2}_difference"
+        df[diff_col_name] = (df[col1] - df[col2]).abs()
+    return df
