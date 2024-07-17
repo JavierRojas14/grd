@@ -152,6 +152,7 @@ VALORES_NULOS_COLUMNAS = {
     "IR_29301_PESO": "DESCONOCIDO",
     "IR_29301_SEVERIDAD": "DESCONOCIDO",
     "IR_29301_MORTALIDAD": "DESCONOCIDO",
+    "FECHA_NACIMIENTO": "--01",
 }
 
 REEMPLAZO_PREVISION = {
@@ -179,6 +180,17 @@ def agregar_informacion_comuna(df):
     return tmp
 
 
+def leer_grd_con_una_columna_mas(input_folder):
+    ruta_archivo = f"{input_folder}/grd_con_una_columna_mas/GRD_PUBLICO_2022.txt"
+
+    # Lee el archivo GRD con una columna mas
+    df = pl.read_csv(ruta_archivo, separator="|", infer_schema_length=0)
+    # Elimina la primera columna con nombre vacio
+    df = df.drop("")
+
+    return df
+
+
 def leer_grd(input_folder):
     """
     Reads and processes the GRD data.
@@ -193,21 +205,22 @@ def leer_grd(input_folder):
         df = pl.scan_csv(
             f"{input_folder}/*.txt",
             separator="|",
-            dtypes=COLUMNAS_POLARS,
-            null_values=VALORES_NULOS_COLUMNAS,
+            infer_schema_length=0,
+            # dtypes=COLUMNAS_POLARS,
+            # null_values=VALORES_NULOS_COLUMNAS,
         )
 
         peso_en_float = pl.col("IR_29301_PESO").str.replace(",", ".").cast(pl.Float32, strict=True)
-        estancia = (pl.col("FECHAALTA") - pl.col("FECHA_INGRESO")).dt.days()
+        estancia = (pl.col("FECHAALTA") - pl.col("FECHA_INGRESO")).dt.total_days()
         anio = pl.col("FECHAALTA").dt.year()
         mes = pl.col("FECHAALTA").dt.month()
         fecha = pl.concat_str(anio.cast(str) + "-" + mes.cast(str))
         edad_persona = (
-            (((pl.col("FECHAALTA") - pl.col("FECHA_NACIMIENTO")).dt.days()) / 365)
+            (((pl.col("FECHAALTA") - pl.col("FECHA_NACIMIENTO")).dt.total_days()) / 365)
             .round(0)
             .cut(range(0, 121, 10))
         )
-        prevision = pl.col("PREVISION").map_dict(REEMPLAZO_PREVISION, default=pl.first())
+        prevision = pl.col("PREVISION").replace(REEMPLAZO_PREVISION, default=pl.first())
 
         df = df.with_columns(
             [
@@ -235,6 +248,11 @@ def main(input_filepath, output_filepath):
     """
     logger = logging.getLogger(__name__)
     logger.info("making final data set from raw data")
+
+    # Lee GRD con una columna mas, y lo guarda eliminandola
+    grd_con_una_col_mas = leer_grd_con_una_columna_mas(input_filepath)
+    ruta_a_guardar_grd_con_col_mas = f"{input_filepath}/GRD_PUBLICO_2022.txt"
+    grd_con_una_col_mas.write_csv(ruta_a_guardar_grd_con_col_mas, separator="|")
 
     df = leer_grd(input_filepath)
     df.write_csv(f"{output_filepath}/df_procesada.csv", separator=";")
