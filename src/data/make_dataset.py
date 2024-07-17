@@ -7,6 +7,7 @@ from dotenv import find_dotenv, load_dotenv
 
 import polars as pl
 import pandas as pd
+import numpy as np
 
 
 COLUMNAS_POLARS = {
@@ -210,7 +211,22 @@ def leer_grd(input_folder):
             # null_values=VALORES_NULOS_COLUMNAS,
         )
 
-        peso_en_float = pl.col("IR_29301_PESO").str.replace(",", ".").cast(pl.Float32, strict=True)
+        # Convierte las fechas a formato de fechas correctamente
+        df = df.with_columns(
+            pl.col("FECHAALTA").cast(pl.Date),
+            pl.col("FECHA_INGRESO").cast(pl.Date, strict=False),  # Elimina los valores --4
+            pl.col("FECHA_NACIMIENTO").cast(
+                pl.Date, strict=False
+            ),  # Elimina los valores 'NO APLICA'
+        )
+
+        # Convierte el peso a Float
+        peso_en_float = (
+            pl.col("IR_29301_PESO")
+            .str.replace(",", ".")
+            .str.replace("DESCONOCIDO", np.nan)
+            .cast(pl.Float32, strict=True)
+        )
         estancia = (pl.col("FECHAALTA") - pl.col("FECHA_INGRESO")).dt.total_days()
         anio = pl.col("FECHAALTA").dt.year()
         mes = pl.col("FECHAALTA").dt.month()
