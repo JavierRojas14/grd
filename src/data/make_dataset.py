@@ -182,12 +182,15 @@ def agregar_informacion_comuna(df):
 
 
 def leer_grd_con_una_columna_mas(input_folder):
-    ruta_archivo = f"{input_folder}/grd_con_una_columna_mas/GRD_PUBLICO_2022.txt"
+    ruta_archivo = f"{input_folder}/grd_con_una_columna_mas/GRD_PUBLICO_EXTERNO_2022.txt"
 
     # Lee el archivo GRD con una columna mas
-    df = pl.read_csv(ruta_archivo, separator="|", infer_schema_length=0)
-    # Elimina la primera columna con nombre vacio
-    df = df.drop("")
+    df = pd.read_csv(
+        ruta_archivo,
+        sep="|",
+        on_bad_lines="skip",
+        encoding="utf-16-le",
+    )
 
     return df
 
@@ -268,7 +271,7 @@ def main(input_filepath, output_filepath):
     # Lee GRD con una columna mas, y lo guarda eliminandola
     grd_con_una_col_mas = leer_grd_con_una_columna_mas(input_filepath)
     ruta_a_guardar_grd_con_col_mas = f"{input_filepath}/GRD_PUBLICO_2022.txt"
-    grd_con_una_col_mas.write_csv(ruta_a_guardar_grd_con_col_mas, separator="|")
+    grd_con_una_col_mas.to_csv(ruta_a_guardar_grd_con_col_mas, sep="|", index=False)
 
     df = leer_grd(input_filepath)
     df.write_csv(f"{output_filepath}/df_procesada.csv", separator=";")
