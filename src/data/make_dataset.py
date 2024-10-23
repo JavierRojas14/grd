@@ -226,7 +226,7 @@ def leer_grd(input_folder):
 
         # Convierte las fechas a formato de fechas correctamente
         df = df.with_columns(
-            pl.col("FECHAALTA").cast(pl.Date),
+            pl.col("FECHAALTA").cast(pl.Date, strict=False),
             pl.col("FECHA_INGRESO").cast(pl.Date, strict=False),  # Elimina los valores --4
             pl.col("FECHA_NACIMIENTO").cast(
                 pl.Date, strict=False
@@ -279,9 +279,9 @@ def main(input_filepath, output_filepath):
     logger.info("making final data set from raw data")
 
     # Lee GRD con una columna mas, y lo guarda eliminandola
-    grd_no_utf = leer_grd_no_utf8(input_filepath)
-    ruta_a_guardar_grd_no_utf = f"{input_filepath}/GRD_PUBLICO_CONCATENADO.txt"
-    grd_no_utf.to_csv(ruta_a_guardar_grd_no_utf, sep="|", index=False)
+    # grd_no_utf = leer_grd_no_utf8(input_filepath)
+    # ruta_a_guardar_grd_no_utf = f"{input_filepath}/GRD_PUBLICO_CONCATENADO.txt"
+    # grd_no_utf.to_csv(ruta_a_guardar_grd_no_utf, sep="|", index=False)
 
     df = leer_grd(input_filepath)
     df.write_csv(f"{output_filepath}/df_procesada.csv", separator=";")
