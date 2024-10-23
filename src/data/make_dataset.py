@@ -299,7 +299,11 @@ def main(input_filepath, output_filepath):
     # grd_no_utf.to_csv(ruta_a_guardar_grd_no_utf, sep="|", index=False)
 
     df = leer_grd(input_filepath)
+    # Filtra el torax
+    df_hospital = df.filter(pl.col("COD_HOSPITAL") == "112103")
+
     df.write_csv(f"{output_filepath}/df_procesada.csv", separator=";")
+    df_hospital.write_csv(f"{output_filepath}/df_procesada_112103.csv", separator=";")
 
 
 if __name__ == "__main__":
