@@ -226,7 +226,22 @@ def leer_grd(input_folder):
 
         # Convierte las fechas a formato de fechas correctamente
         df = df.with_columns(
-            pl.col("FECHAALTA").cast(pl.Date, strict=False),
+            pl.col("FECHAALTA")
+            .str.strptime(pl.Datetime, "%Y-%m-%d", strict=False)
+            .alias("FECHAALTA"),
+            pl.col("FECHAALTA")
+            .str.strptime(pl.Datetime, "%d-%m-%Y", strict=False)
+            .alias("FECHAALTA_NEW"),
+        )
+
+        df = df.with_columns(
+            pl.when(pl.col("FECHAALTA").is_null())
+            .then(pl.col("FECHAALTA_NEW"))
+            .otherwise(pl.col("FECHAALTA"))
+            .alias("FECHAALTA")
+        )
+
+        df = df.with_columns(
             pl.col("FECHA_INGRESO").cast(pl.Date, strict=False),  # Elimina los valores --4
             pl.col("FECHA_NACIMIENTO").cast(
                 pl.Date, strict=False
