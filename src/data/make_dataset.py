@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
+import glob
 import logging
 from pathlib import Path
 
 import click
-from dotenv import find_dotenv, load_dotenv
-
-import polars as pl
-import pandas as pd
 import numpy as np
-
+import pandas as pd
+import polars as pl
+from dotenv import find_dotenv, load_dotenv
 
 COLUMNAS_POLARS = {
     "COD_HOSPITAL": pl.Int32,
@@ -181,6 +180,17 @@ def agregar_informacion_comuna(df):
     return tmp
 
 
+def leer_grd_no_utf8(input_folder):
+    ruta_archivo = f"{input_folder}/no-utf-8/*.txt"
+    archivos = glob.glob(ruta_archivo)
+
+    df = pd.concat(
+        pd.read_csv(file, sep="|", encoding="utf-16-le", on_bad_lines="skip") for file in archivos
+    )
+
+    return df
+
+
 def leer_grd_con_una_columna_mas(input_folder):
     ruta_archivo = f"{input_folder}/grd_con_una_columna_mas/GRD_PUBLICO_EXTERNO_2022.txt"
 
@@ -269,9 +279,9 @@ def main(input_filepath, output_filepath):
     logger.info("making final data set from raw data")
 
     # Lee GRD con una columna mas, y lo guarda eliminandola
-    grd_con_una_col_mas = leer_grd_con_una_columna_mas(input_filepath)
-    ruta_a_guardar_grd_con_col_mas = f"{input_filepath}/GRD_PUBLICO_2022.txt"
-    grd_con_una_col_mas.to_csv(ruta_a_guardar_grd_con_col_mas, sep="|", index=False)
+    grd_no_utf = leer_grd_no_utf8(input_filepath)
+    ruta_a_guardar_grd_no_utf = f"{input_filepath}/GRD_PUBLICO_CONCATENADO.txt"
+    grd_no_utf.to_csv(ruta_a_guardar_grd_no_utf, sep="|", index=False)
 
     df = leer_grd(input_filepath)
     df.write_csv(f"{output_filepath}/df_procesada.csv", separator=";")
