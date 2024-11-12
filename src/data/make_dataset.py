@@ -280,6 +280,7 @@ def leer_grd(input_folder):
         )
         df = df.collect()
         df = agregar_informacion_comuna(df)
+        df = df.sort("FECHAALTA")
 
         return df
 
