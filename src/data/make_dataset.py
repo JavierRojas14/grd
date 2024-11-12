@@ -205,6 +205,47 @@ def leer_grd_con_una_columna_mas(input_folder):
     return df
 
 
+def formatear_fechas(
+    df: pl.DataFrame, columna_fecha: str, columna_salida: str = "FECHA_FORMATEADA"
+) -> pl.DataFrame:
+    """
+    Formatea las fechas en la columna especificada en dos formatos diferentes y consolida el
+    resultado.
+
+    Parámetros:
+    - df: pl.DataFrame. El DataFrame que contiene las fechas.
+    - columna_fecha: str. El nombre de la columna con las fechas a formatear.
+    - columna_salida: str. El nombre de la columna resultante con la fecha formateada.
+
+    Retorna:
+    - pl.DataFrame con una columna adicional de fecha formateada.
+    """
+    # Intentar parsear las fechas asumiendo que el día está al inicio
+    df = df.with_columns(
+        pl.col(columna_fecha)
+        .str.strptime(pl.Date, "%d-%m-%Y", strict=False)
+        .alias(f"{columna_salida}_DIA_AL_INICIO")
+    )
+
+    # Intentar parsear las fechas asumiendo que el año está al inicio
+    df = df.with_columns(
+        pl.col(columna_fecha)
+        .str.strptime(pl.Date, "%Y-%m-%d", strict=False)
+        .alias(f"{columna_salida}_ANIO_AL_INICIO")
+    )
+
+    # Combinar ambas interpretaciones en la columna final de fecha formateada
+    df = df.with_columns(
+        pl.when(pl.col(f"{columna_salida}_DIA_AL_INICIO").is_not_null())
+        .then(pl.col(f"{columna_salida}_DIA_AL_INICIO"))
+        .otherwise(pl.col(f"{columna_salida}_ANIO_AL_INICIO"))
+        .alias(columna_salida)
+    )
+
+    # Opcional: eliminar las columnas intermedias utilizadas para el parseo
+    return df.drop([f"{columna_salida}_DIA_AL_INICIO", f"{columna_salida}_ANIO_AL_INICIO"])
+
+
 def leer_grd(input_folder):
     """
     Reads and processes the GRD data.
@@ -224,30 +265,10 @@ def leer_grd(input_folder):
             # null_values=VALORES_NULOS_COLUMNAS,
         )
 
-        df = df.with_columns(pl.col("FECHAALTA").cast(pl.Date, strict=False))
-        # # Convierte las fechas a formato de fechas correctamente
-        # df = df.with_columns(
-        #     pl.col("FECHAALTA")
-        #     .str.strptime(pl.Datetime, "%Y-%m-%d", strict=False)
-        #     .alias("FECHAALTA"),
-        #     pl.col("FECHAALTA")
-        #     .str.strptime(pl.Datetime, "%d-%m-%Y", strict=False)
-        #     .alias("FECHAALTA_NEW"),
-        # )
-
-        # df = df.with_columns(
-        #     pl.when(pl.col("FECHAALTA").is_null())
-        #     .then(pl.col("FECHAALTA_NEW"))
-        #     .otherwise(pl.col("FECHAALTA"))
-        #     .alias("FECHAALTA")
-        # )
-
-        df = df.with_columns(
-            pl.col("FECHA_INGRESO").cast(pl.Date, strict=False),  # Elimina los valores --4
-            pl.col("FECHA_NACIMIENTO").cast(
-                pl.Date, strict=False
-            ),  # Elimina los valores 'NO APLICA'
-        )
+        # Formatea las fechas ingresadas
+        df = formatear_fechas(df, "FECHAALTA", "FECHAALTA")
+        df = formatear_fechas(df, "FECHA_INGRESO", "FECHA_INGRESO")
+        df = formatear_fechas(df, "FECHA_NACIMIENTO", "FECHA_NACIMIENTO")
 
         # Convierte el peso a Float
         peso_en_float = (
