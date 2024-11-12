@@ -266,9 +266,9 @@ def leer_grd(input_folder):
         )
 
         # Formatea las fechas ingresadas
-        df = formatear_fechas(df, "FECHAALTA", "FECHAALTA")
-        df = formatear_fechas(df, "FECHA_INGRESO", "FECHA_INGRESO")
-        df = formatear_fechas(df, "FECHA_NACIMIENTO", "FECHA_NACIMIENTO")
+        df = formatear_fechas(df, "FECHAALTA", "FECHAALTA_FORMATEADA")
+        df = formatear_fechas(df, "FECHA_INGRESO", "FECHA_INGRESO_FORMATEADA")
+        df = formatear_fechas(df, "FECHA_NACIMIENTO", "FECHA_NACIMIENTO_FORMATEADA")
 
         # Convierte el peso a Float
         peso_en_float = (
@@ -277,12 +277,21 @@ def leer_grd(input_folder):
             .str.replace("DESCONOCIDO", np.nan)
             .cast(pl.Float32, strict=True)
         )
-        estancia = (pl.col("FECHAALTA") - pl.col("FECHA_INGRESO")).dt.total_days()
-        anio = pl.col("FECHAALTA").dt.year()
-        mes = pl.col("FECHAALTA").dt.month()
+        estancia = (
+            pl.col("FECHAALTA_FORMATEADA") - pl.col("FECHA_INGRESO_FORMATEADA")
+        ).dt.total_days()
+        anio = pl.col("FECHAALTA_FORMATEADA").dt.year()
+        mes = pl.col("FECHAALTA_FORMATEADA").dt.month()
         fecha = pl.concat_str(anio.cast(str) + "-" + mes.cast(str))
         edad_persona = (
-            (((pl.col("FECHAALTA") - pl.col("FECHA_NACIMIENTO")).dt.total_days()) / 365)
+            (
+                (
+                    (
+                        pl.col("FECHAALTA_FORMATEADA") - pl.col("FECHA_NACIMIENTO_FORMATEADA")
+                    ).dt.total_days()
+                )
+                / 365
+            )
             .round(0)
             .cut(range(0, 121, 10))
         )
@@ -301,7 +310,7 @@ def leer_grd(input_folder):
         )
         df = df.collect()
         df = agregar_informacion_comuna(df)
-        df = df.sort("FECHAALTA")
+        df = df.sort("FECHAALTA_FORMATEADA")
 
         return df
 
