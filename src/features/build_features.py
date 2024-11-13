@@ -300,5 +300,5 @@ def procesar_duracion_estadia(df):
     """Función principal que calcula la estadía y corrige duraciones negativas o iguales a cero."""
     df = calcular_estadia(df)
     df = corregir_duracion_negativa(df)
-    # df = corregir_duracion_cero(df)
+    df = corregir_duracion_cero(df)
     return df
