@@ -302,3 +302,62 @@ def procesar_duracion_estadia(df):
     df = corregir_duracion_negativa(df)
     df = corregir_duracion_cero(df)
     return df
+
+
+def obtener_resumen_dias_estada(df):
+    """Agrupa y obtiene el resumen de días de estadía totales por diagnóstico y servicio."""
+    resumen = df.groupby(["ANIO_EGRESO", "DIAGNOSTICO1", "servicio"])["duracion_estadia"].sum()
+    resumen = resumen.unstack(fill_value=pd.Timedelta(0))
+    return resumen
+
+
+def calcular_total_dias_estada(resumen):
+    """Calcula el total de días de estadía por año y diagnóstico."""
+    return resumen.sum(axis=1)
+
+
+def agregar_total_dias_ocupados(resumen, total_dias):
+    """Agrega el total de días de estadía ocupados al DataFrame resumen."""
+    resumen["total_dias"] = total_dias
+    return resumen
+
+
+def calcular_porcentaje_ocupacion(resumen, total_dias):
+    """Calcula el porcentaje de ocupación por servicio."""
+    porcentaje_ocupacion = resumen.div(total_dias, axis=0)
+    return (
+        porcentaje_ocupacion.stack()
+        .to_frame("porcentaje_de_ocupacion")
+        .query("porcentaje_de_ocupacion > 0")
+    )
+
+
+def convertir_dias_totales_formato_long(resumen):
+    """Convierte los días totales a formato long."""
+    resumen_long = resumen.stack().to_frame("dias_estada_totales")
+    return resumen_long[resumen_long["dias_estada_totales"] > pd.Timedelta(0)]
+
+
+def unir_porcentaje_ocupacion(resumen_long, porcentaje_ocupacion):
+    """Une el porcentaje de ocupación al DataFrame de resumen de días de estadía."""
+    return resumen_long.merge(
+        porcentaje_ocupacion, how="inner", left_index=True, right_index=True
+    ).reset_index()
+
+
+def obtener_resumen_formato_wide(df):
+    """Obtiene el resumen final en formato wide."""
+    return df.set_index(["ANIO_EGRESO", "DIAGNOSTICO1", "servicio"]).unstack().reset_index(level=1)
+
+
+def procesar_resumen_dias_estada(df):
+    """Función principal que realiza todos los pasos para obtener el resumen de días de estadía."""
+    resumen = obtener_resumen_dias_estada(df)
+    total_dias = calcular_total_dias_estada(resumen)
+    resumen = agregar_total_dias_ocupados(resumen, total_dias)
+
+    porcentaje_ocupacion = calcular_porcentaje_ocupacion(resumen, total_dias)
+    resumen_long = convertir_dias_totales_formato_long(resumen)
+    resumen_long = unir_porcentaje_ocupacion(resumen_long, porcentaje_ocupacion)
+
+    return obtener_resumen_formato_wide(resumen_long)
