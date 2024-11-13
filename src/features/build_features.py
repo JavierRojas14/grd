@@ -243,7 +243,17 @@ def reiniciar_indice(df):
 
 def formatear_fechas(df):
     """Formatea las fechas ingresadas"""
-    df["fecha"] = pd.to_datetime(df["fecha"], format="mixed")
+    # Formatea las fechas con el dia al inicio (egresos del 2023) y con el anio al inicio
+    # (egresos entre 2019 a 2022)
+    fechas_dia_inicial = pd.to_datetime(df["fecha"], format="%d-%m-%Y", errors="coerce")
+    fechas_anio_inicial = pd.to_datetime(df["fecha"], format="%Y-%m-%d", errors="coerce")
+
+    # Une ambas fechas en una columna
+    fechas_consolidadas = np.where(
+        fechas_dia_inicial.isna(), fechas_anio_inicial, fechas_dia_inicial
+    )
+
+    df["fecha"] = fechas_consolidadas
     return df
 
 
