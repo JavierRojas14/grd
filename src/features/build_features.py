@@ -253,3 +253,32 @@ def procesar_viaje_paciente(viaje_paciente, categorias, columnas_orden):
     df = formatear_fechas(df)
 
     return df
+
+
+def calcular_estadia(df):
+    """Calcula la duración de la estadía de cada traslado, en base a la diferencia entre fechas."""
+    df["duracion_estadia"] = df.groupby("id_egreso")["fecha"].diff().shift(-1)
+    return df
+
+
+def corregir_duracion_negativa(df):
+    """Corrige las duraciones negativas añadiendo un año a la fecha correspondiente."""
+    indices_negativos = df[df["duracion_estadia"] < pd.Timedelta(0)].index + 1
+    df.loc[indices_negativos, "fecha"] += pd.offsets.DateOffset(years=1)
+    df["duracion_estadia"] = df.groupby("id_egreso")["fecha"].diff().shift(-1)
+    return df
+
+
+def corregir_duracion_cero(df):
+    """Corrige las duraciones de estadía igual a cero añadiendo un día."""
+    indices_cero = df[df["duracion_estadia"] == pd.Timedelta(0)].index
+    df.loc[indices_cero, "duracion_estadia"] += pd.Timedelta(days=1)
+    return df
+
+
+def procesar_duracion_estadia(df):
+    """Función principal que calcula la estadía y corrige duraciones negativas o iguales a cero."""
+    df = calcular_estadia(df)
+    df = corregir_duracion_negativa(df)
+    df = corregir_duracion_cero(df)
+    return df
