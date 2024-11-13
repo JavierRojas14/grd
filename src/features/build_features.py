@@ -278,7 +278,11 @@ def calcular_estadia(df):
 
 
 def corregir_duracion_negativa(df):
-    """Corrige las duraciones negativas añadiendo un año a la fecha correspondiente."""
+    """Corrige las duraciones negativas añadiendo un año a la fecha correspondiente.
+
+    Estas fechas tienen duraciones negativas, ya que la fecha inmediatamente posterior tiene el
+    anio mal imputado. Por lo tanto, se agrega un anio a tal fecha
+    """
     indices_negativos = df[df["duracion_estadia"] < pd.Timedelta(0)].index + 1
     df.loc[indices_negativos, "fecha"] += pd.offsets.DateOffset(years=1)
     df["duracion_estadia"] = df.groupby("id_egreso")["fecha"].diff().shift(-1)
@@ -296,5 +300,5 @@ def procesar_duracion_estadia(df):
     """Función principal que calcula la estadía y corrige duraciones negativas o iguales a cero."""
     df = calcular_estadia(df)
     df = corregir_duracion_negativa(df)
-    df = corregir_duracion_cero(df)
+    # df = corregir_duracion_cero(df)
     return df
