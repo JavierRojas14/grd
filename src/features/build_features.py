@@ -174,3 +174,42 @@ def calculate_and_add_difference(df, column_pairs):
         diff_col_name = f"{col1}_{col2}_difference"
         df[diff_col_name] = (df[col1] - df[col2]).abs()
     return df
+
+
+def transformar_columnas_servicio(df, columnas_servicio, variables_id):
+    """Transforma las columnas de servicio a formato long."""
+    return pd.melt(
+        df,
+        id_vars=variables_id,
+        value_vars=columnas_servicio,
+        var_name="tipo_servicio",
+        value_name="servicio",
+    )
+
+
+def transformar_columnas_fecha(df, columnas_fecha, variables_id):
+    """Transforma las columnas de fechas a formato long."""
+    return pd.melt(
+        df,
+        id_vars=variables_id,
+        value_vars=columnas_fecha,
+        var_name="tipo_fecha",
+        value_name="fecha",
+    )
+
+
+def crear_viaje_paciente(df, columnas_servicio, columnas_fecha):
+    """Crea el viaje del paciente uniendo las columnas de servicio y de fechas en formato long."""
+    variables_id_servicio = [
+        "id_egreso",
+        "DIAGNOSTICO1",
+        "ANIO_EGRESO",
+        "IR_29301_SEVERIDAD",
+        "CIP_ENCRIPTADO",
+    ]
+    variables_id_fecha = ["id_egreso"]
+
+    servicio_long = transformar_columnas_servicio(df, columnas_servicio, variables_id_servicio)
+    fecha_long = transformar_columnas_fecha(df, columnas_fecha, variables_id_fecha)
+
+    return fecha_long.join(servicio_long, rsuffix="_y")
