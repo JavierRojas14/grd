@@ -213,3 +213,43 @@ def crear_viaje_paciente(df, columnas_servicio, columnas_fecha):
     fecha_long = transformar_columnas_fecha(df, columnas_fecha, variables_id_fecha)
 
     return fecha_long.join(servicio_long, rsuffix="_y")
+
+
+def recodificar_tipo_servicio(df, categorias):
+    """Recodifica los tipos de servicio para ordenarlos correctamente."""
+    df["tipo_servicio"] = pd.Categorical(df["tipo_servicio"], categories=categorias, ordered=True)
+    return df
+
+
+def ordenar_por_linea_temporal(df, columnas_orden):
+    """Ordena el DataFrame por las columnas especificadas para seguir la línea temporal."""
+    return df.sort_values(columnas_orden)
+
+
+def eliminar_traslados_sin_ingresar(df):
+    """Elimina los registros que tienen valores NaN."""
+    return df.dropna()
+
+
+def reiniciar_indice(df):
+    """Reinicia el índice del DataFrame."""
+    return df.reset_index(drop=True)
+
+
+def formatear_fechas(df):
+    """Formatea las fechas ingresadas"""
+    df["fecha"] = pd.to_datetime(df["fecha"], format="mixed")
+    return df
+
+
+def procesar_viaje_paciente(viaje_paciente, categorias, columnas_orden):
+    """Función principal para procesar el viaje del paciente en varios pasos."""
+    viaje_paciente = viaje_paciente.copy()
+
+    df = recodificar_tipo_servicio(viaje_paciente, categorias)
+    df = ordenar_por_linea_temporal(df, columnas_orden)
+    df = eliminar_traslados_sin_ingresar(df)
+    df = reiniciar_indice(df)
+    df = formatear_fechas(df)
+
+    return df
