@@ -191,20 +191,6 @@ def leer_grd_no_utf8(input_folder):
     return df
 
 
-def leer_grd_con_una_columna_mas(input_folder):
-    ruta_archivo = f"{input_folder}/grd_con_una_columna_mas/GRD_PUBLICO_EXTERNO_2022.txt"
-
-    # Lee el archivo GRD con una columna mas
-    df = pd.read_csv(
-        ruta_archivo,
-        sep="|",
-        on_bad_lines="skip",
-        encoding="utf-16-le",
-    )
-
-    return df
-
-
 def formatear_fechas(
     df: pl.DataFrame, columna_fecha: str, columna_salida: str = "FECHA_FORMATEADA"
 ) -> pl.DataFrame:
