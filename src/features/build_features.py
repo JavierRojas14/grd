@@ -221,6 +221,11 @@ def recodificar_tipo_servicio(df, categorias):
     return df
 
 
+def recodificar_tipo_cama(df, categoria_camas):
+    df["servicio"] = df["servicio"].replace(categoria_camas)
+    return df
+
+
 def ordenar_por_linea_temporal(df, columnas_orden):
     """Ordena el DataFrame por las columnas especificadas para seguir la línea temporal."""
     return df.sort_values(columnas_orden)
@@ -242,11 +247,12 @@ def formatear_fechas(df):
     return df
 
 
-def procesar_viaje_paciente(viaje_paciente, categorias, columnas_orden):
+def procesar_viaje_paciente(viaje_paciente, categorias, columnas_orden, codificador_camas):
     """Función principal para procesar el viaje del paciente en varios pasos."""
     viaje_paciente = viaje_paciente.copy()
 
     df = recodificar_tipo_servicio(viaje_paciente, categorias)
+    df = recodificar_tipo_cama(df, codificador_camas)
     df = ordenar_por_linea_temporal(df, columnas_orden)
     df = eliminar_traslados_sin_ingresar(df)
     df = reiniciar_indice(df)
