@@ -266,6 +266,7 @@ def leer_grd(input_folder):
         estancia = (
             pl.col("FECHAALTA_FORMATEADA") - pl.col("FECHA_INGRESO_FORMATEADA")
         ).dt.total_days()
+        estancia = pl.when(estancia == 0).then(estancia + 1).otherwise(estancia)
         anio = pl.col("FECHAALTA_FORMATEADA").dt.year()
         mes = pl.col("FECHAALTA_FORMATEADA").dt.month()
         fecha = pl.concat_str(anio.cast(str) + "-" + mes.cast(str))
@@ -312,9 +313,9 @@ def main(input_filepath, output_filepath):
     logger.info("making final data set from raw data")
 
     # Lee GRD con una columna mas, y lo guarda eliminandola
-    grd_no_utf = leer_grd_no_utf8(input_filepath)
-    ruta_a_guardar_grd_no_utf = f"{input_filepath}/GRD_PUBLICO_CONCATENADO.txt"
-    grd_no_utf.to_csv(ruta_a_guardar_grd_no_utf, sep="|", index=False)
+    # grd_no_utf = leer_grd_no_utf8(input_filepath)
+    # ruta_a_guardar_grd_no_utf = f"{input_filepath}/GRD_PUBLICO_CONCATENADO.txt"
+    # grd_no_utf.to_csv(ruta_a_guardar_grd_no_utf, sep="|", index=False)
 
     df = leer_grd(input_filepath)
     # Filtra el torax
