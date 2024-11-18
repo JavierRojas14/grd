@@ -373,4 +373,7 @@ def procesar_resumen_dias_estada(df):
     resumen_long = convertir_dias_totales_formato_long(resumen)
     resumen_long = unir_porcentaje_ocupacion(resumen_long, porcentaje_ocupacion)
 
-    return obtener_resumen_formato_wide(resumen_long)
+    resumen_wide = obtener_resumen_formato_wide(resumen_long)
+    resumen_wide = resumen_wide.fillna(0)
+
+    return resumen_wide
