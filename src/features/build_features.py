@@ -350,11 +350,24 @@ def obtener_resumen_formato_wide(df):
     return df.set_index(["ANIO_EGRESO", "DIAGNOSTICO1", "servicio"]).unstack().reset_index(level=1)
 
 
+def calcular_dias_totales_UPC(resumen):
+    """Obtiene el total de dias UPC"""
+    return resumen["UCI"] + resumen["UTI"]
+
+
+def agregar_total_dias_upc(resumen, dias_upc):
+    resumen["dias_UPC"] = dias_upc
+    return resumen
+
+
 def procesar_resumen_dias_estada(df):
     """Función principal que realiza todos los pasos para obtener el resumen de días de estadía."""
     resumen = obtener_resumen_dias_estada(df)
     total_dias = calcular_total_dias_estada(resumen)
     resumen = agregar_total_dias_ocupados(resumen, total_dias)
+
+    dias_upc = calcular_dias_totales_UPC(resumen)
+    resumen = agregar_total_dias_upc(resumen, dias_upc)
 
     porcentaje_ocupacion = calcular_porcentaje_ocupacion(resumen, total_dias)
     resumen_long = convertir_dias_totales_formato_long(resumen)
