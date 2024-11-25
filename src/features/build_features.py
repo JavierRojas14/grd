@@ -379,4 +379,7 @@ def procesar_resumen_dias_estada(df):
     # Simplifica estructura de columnas
     resumen_wide.columns = ["_".join(col).strip().strip("_") for col in resumen_wide.columns.values]
 
+    # Resetea el indice
+    resumen_wide = resumen_wide.reset_index()
+
     return resumen_wide
