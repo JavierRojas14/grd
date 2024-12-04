@@ -319,9 +319,11 @@ def main(input_filepath, output_filepath):
     df = leer_grd(input_filepath)
     # Filtra el torax
     df_hospital = df.filter(pl.col("COD_HOSPITAL") == "112103")
+    df_roberto = df.filter(pl.col("COD_HOSPITAL") == "109101")
 
     df.write_csv(f"{output_filepath}/df_procesada.csv", separator=";")
     df_hospital.write_csv(f"{output_filepath}/df_procesada_112103.csv", separator=";")
+    df_roberto.write_csv(f"{output_filepath}/df_procesada_109101.csv", separator=";")
 
 
 if __name__ == "__main__":
